@@ -1,7 +1,3 @@
-"""
-API para gestionar credenciales verificables.
-"""
-
 from fastapi import FastAPI, Depends, HTTPException, Query
 from sqlalchemy.orm import Session
 from database import engine, SessionLocal
@@ -9,10 +5,8 @@ from models import Base, Credential
 from schemas import CredentialCreate, CredentialResponse
 from services import create_credential, get_credential, delete_credential, revoke_credential
 from utils import generate_signature
-from sqlalchemy.sql import cast
-from sqlalchemy.types import String
+from datetime import datetime
 
-# Inicializar la aplicación FastAPI
 app = FastAPI()
 
 # Crear las tablas en la base de datos
@@ -27,26 +21,21 @@ def get_db():
         db.close()
 
 
-@app.get("/", tags=["Root"])
+@app.get("/")
 def read_root():
     """Devuelve un mensaje de bienvenida a la API."""
     return {"message": "Bienvenido a la API de Credenciales Verificables"}
 
 
-@app.post("/credentials/", response_model=CredentialResponse, tags=["Credentials"])
+@app.post("/credentials/", response_model=CredentialResponse)
 def create_new_credential(credential: CredentialCreate, db: Session = Depends(get_db)):
-    """Crea una nueva credencial verificable completa."""
-    existing_credential = db.query(Credential).filter(
-        Credential.issuer == credential.issuer,
-        cast(Credential.credentialSubject["id"], String) == credential.credentialSubject.id,
-    ).first()
-    if existing_credential:
-        raise HTTPException(status_code=400, detail="Credential already exists")
-
+    """Crea una nueva credencial verificable."""
+    credential.signature = generate_signature(f"{credential.issuer}-{credential.credentialSubject['id']}")
     return create_credential(db, credential)
 
 
-@app.get("/credentials/{credential_id}", response_model=CredentialResponse, tags=["Credentials"])
+
+@app.get("/credentials/{credential_id}", response_model=CredentialResponse)
 def read_credential(credential_id: int, db: Session = Depends(get_db)):
     """Obtiene una credencial específica por su ID."""
     credential = get_credential(db, credential_id)
@@ -55,7 +44,7 @@ def read_credential(credential_id: int, db: Session = Depends(get_db)):
     return credential
 
 
-@app.post("/credentials/{credential_id}/revoke", tags=["Credentials"])
+@app.post("/credentials/{credential_id}/revoke")
 def revoke_existing_credential(credential_id: int, db: Session = Depends(get_db)):
     """Revoca una credencial específica."""
     credential = revoke_credential(db, credential_id)
@@ -64,7 +53,7 @@ def revoke_existing_credential(credential_id: int, db: Session = Depends(get_db)
     return {"message": f"Credential {credential_id} revoked successfully"}
 
 
-@app.get("/credentials/", tags=["Credentials"])
+@app.get("/credentials/")
 def search_credentials(
     subject: str = Query(None, description="DID del sujeto"),
     issuer: str = Query(None, description="DID del emisor"),
@@ -81,14 +70,10 @@ def search_credentials(
         query = query.filter(Credential.issuer == issuer)
     if claim:
         query = query.filter(Credential.claim == claim)
-
-    results = query.offset(skip).limit(limit).all()
-    if not results:
-        raise HTTPException(status_code=404, detail="No credentials found")
-    return results
+    return query.offset(skip).limit(limit).all()
 
 
-@app.delete("/credentials/{credential_id}", tags=["Credentials"])
+@app.delete("/credentials/{credential_id}")
 def delete_existing_credential(credential_id: int, db: Session = Depends(get_db)):
     """Elimina una credencial específica por su ID."""
     credential = delete_credential(db, credential_id)

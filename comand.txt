@@ -31,68 +31,46 @@ Descripción: Crea una nueva credencial verificable.
 Método: POST
 URL: http://127.0.0.1:8000/credentials/
 Cuerpo (JSON):
-
+JSON de entrada:
 json
 Copiar código
 {
-    "subject": "John Doe",
-    "issuer": "University of Example",
-    "claim": "Bachelor of Science"
+    "context": ["https://www.w3.org/2018/credentials/v1"],
+    "type": ["VerifiableCredential"],
+    "issuer": "did:example:issuer123",
+    "credentialSubject": {
+        "id": "did:example:subject123",
+        "name": "John Doe"
+    },
+    "claim": {
+        "degree": "Bachelor of Science"
+    }
 }
-Respuesta esperada:
-
-json-
-Copiar código
-{
-    "id": 1,
-    "subject": "John Doe",
-    "issuer": "University of Example",
-    "claim": "Bachelor of Science",
-    "issued_at": "2025-01-04T10:00:00Z",
-    "signature": "e3b0c44298fc1c14..."  // Firma generada automáticamente
-}
-3. Ruta: GET /credentials/{credential_id}
-Descripción: Obtiene los detalles de una credencial verificable específica.
-
-Método: GET
-URL: http://127.0.0.1:8000/credentials/1
-Cambia 1 por el id de la credencial que deseas consultar.
-Respuesta esperada:
-
+Datos de salida almacenados en la base de datos:
 json
 Copiar código
 {
-    "id": 1,
-    "subject": "John Doe",
-    "issuer": "University of Example",
-    "claim": "Bachelor of Science",
-    "issued_at": "2025-01-04T10:00:00Z",
-    "signature": "e3b0c44298fc1c14..."
-}
-Si no existe la credencial:
-
-json
-Copiar código
-{
-    "detail": "Credential not found"
-}
-4. Ruta: DELETE /credentials/{credential_id}
-Descripción: Elimina una credencial verificable específica.
-
-Método: DELETE
-URL: http://127.0.0.1:8000/credentials/1
-Cambia 1 por el id de la credencial que deseas eliminar.
-Respuesta esperada:
-
-json
-Copiar código
-{
-    "message": "Credential 1 deleted successfully"
-}
-Si no existe la credencial:
-
-json
-Copiar código
-{
-    "detail": "Credential not found"
+    "id": 5,
+    "context": ["https://www.w3.org/2018/credentials/v1"],
+    "type": ["VerifiableCredential"],
+    "issuer": "did:example:issuer123",
+    "credentialSubject": {
+        "id": "did:example:subject123",
+        "name": "John Doe"
+    },
+    "claim": {
+        "degree": "Bachelor of Science"
+    },
+    "proof": {
+        "jws": "0e69a86ffc7d3bd2b06ce57288450f5ae2ad1b8f73e58751245e748fde1286be",
+        "type": "Ed25519Signature2020",
+        "created": "2025-01-04T21:06:03.323654",
+        "proofPurpose": "assertionMethod",
+        "verificationMethod": "did:example:issuer123#keys-1"
+    },
+    "issued_at": "2025-01-04T21:06:03",
+    "expiration_date": null,
+    "signature": "0e69a86ffc7d3bd2b06ce57288450f5ae2ad1b8f73e58751245e748fde1286be",
+    "revoked": 0,
+    "revoked_at": null
 }
