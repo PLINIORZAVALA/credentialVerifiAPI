@@ -1,2 +1,98 @@
-python -m venv venv  -> comnado para la creació
-.\venv\Scripts\Activate   -> comando para la activacion
+ - CREACIÓN DEL PROYECTO
+    python -m venv venv  -> comnado para la creació
+    .\venv\Scripts\Activate   -> comando para la activacion
+ - COMANDOS PARA LA CREACION DE LA BASE DE DATIS EN MYSQL(WAMP)
+    mysql> CREATE DATABASE verifiable_credentials;
+    mysql> USE verifiable_credentials;
+ -  Instalcion de librerias necesarias
+    pip install fastapi uvicorn sqlalchemy pymysql 
+    pip install pymysql sqlalchemy
+    pip install fastapi uvicorn sqlalchemy pymysql pydantic
+    pip freeze > requirements.txt 
+ - Ejecución del servidor
+    uvicorn main:app --reload
+    
+- Prueba de cada uno de los metodos 
+   1. Ruta: GET /
+Descripción: Comprueba que el servidor está funcionando correctamente.
+
+Método: GET
+URL: http://127.0.0.1:8000/
+Respuesta esperada:
+
+json
+Copiar código
+{
+    "message": "Bienvenido a la API de Credenciales Verificables"
+}
+2. Ruta: POST /credentials/
+Descripción: Crea una nueva credencial verificable.
+
+Método: POST
+URL: http://127.0.0.1:8000/credentials/
+Cuerpo (JSON):
+
+json
+Copiar código
+{
+    "subject": "John Doe",
+    "issuer": "University of Example",
+    "claim": "Bachelor of Science",
+}
+Respuesta esperada:
+
+json
+Copiar código
+{
+    "id": 1,
+    "subject": "John Doe",
+    "issuer": "University of Example",
+    "claim": "Bachelor of Science",
+    "issued_at": "2025-01-04T10:00:00Z",
+    "signature": "e3b0c44298fc1c14..."  // Firma generada automáticamente
+}
+3. Ruta: GET /credentials/{credential_id}
+Descripción: Obtiene los detalles de una credencial verificable específica.
+
+Método: GET
+URL: http://127.0.0.1:8000/credentials/1
+Cambia 1 por el id de la credencial que deseas consultar.
+Respuesta esperada:
+
+json
+Copiar código
+{
+    "id": 1,
+    "subject": "John Doe",
+    "issuer": "University of Example",
+    "claim": "Bachelor of Science",
+    "issued_at": "2025-01-04T10:00:00Z",
+    "signature": "e3b0c44298fc1c14..."
+}
+Si no existe la credencial:
+
+json
+Copiar código
+{
+    "detail": "Credential not found"
+}
+4. Ruta: DELETE /credentials/{credential_id}
+Descripción: Elimina una credencial verificable específica.
+
+Método: DELETE
+URL: http://127.0.0.1:8000/credentials/1
+Cambia 1 por el id de la credencial que deseas eliminar.
+Respuesta esperada:
+
+json
+Copiar código
+{
+    "message": "Credential 1 deleted successfully"
+}
+Si no existe la credencial:
+
+json
+Copiar código
+{
+    "detail": "Credential not found"
+}
