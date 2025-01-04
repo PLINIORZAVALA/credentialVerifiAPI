@@ -12,8 +12,9 @@ class Credential(Base):
     credentialSubject = Column(JSON, nullable=False)  # Campo JSON para almacenar el objeto
     claim = Column(JSON, nullable=False)
     proof = Column(JSON, nullable=True)  # Campo para almacenar el proof
-    issued_at = Column(DateTime, default=datetime.utcnow, nullable=False)
-    expiration_date = Column(DateTime, nullable=True)  # Campo opcional para la fecha de expiración
+    issuanceDate = Column(DateTime, default=datetime.utcnow, nullable=False)  # Cambiado de issued_at
+    expirationDate = Column(DateTime, nullable=True)  # Cambiado de expiration_date
     signature = Column(String(512), nullable=True)
     revoked = Column(Boolean, default=False, nullable=False)
     revoked_at = Column(DateTime, nullable=True)
+

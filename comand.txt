@@ -49,6 +49,7 @@ Copiar código
 Datos de salida almacenados en la base de datos:
 json
 Copiar código
+
 {
     "id": 5,
     "context": ["https://www.w3.org/2018/credentials/v1"],
@@ -72,5 +73,62 @@ Copiar código
     "expiration_date": null,
     "signature": "0e69a86ffc7d3bd2b06ce57288450f5ae2ad1b8f73e58751245e748fde1286be",
     "revoked": 0,
+    "revoked_at": null
+}
+
+======================================================================================
+Aspecto	Credencial de Entrada	Credencial Resultante
+context	["https://www.w3.org/2018/credentials/v1"]	["https://www.w3.org/2018/credentials/v1"]
+type	["VerifiableCredential"]	["VerifiableCredential"]
+issuer	"did:example:issuer123"	"did:example:issuer123"
+credentialSubject	{ "id": "did:example:subject123", "name": "John Doe" }	{ "id": "did:example:subject123", "name": "John Doe" }
+claim	{ "degree": "Bachelor of Science" }	{ "degree": "Bachelor of Science" }
+id	No incluido	7
+proof	No incluido	{ "jws": "0e69a86ffc7d3bd2b06ce57288450f5ae2ad1b8f73e58751245e748fde1286be", "type": "Ed25519Signature2020", "created": "2025-01-04T21:57:35.005112", "proofPurpose": "assertionMethod", "verificationMethod": "did:example:issuer123#keys-1" }
+issued_at	No incluido	"2025-01-04T21:57:35"
+expiration_date	No incluido	null
+signature	No incluido	"0e69a86ffc7d3bd2b06ce57288450f5ae2ad1b8f73e58751245e748fde1286be"
+revoked	No incluido	false
+revoked_at	No incluido	null
+======================================================================================
+
+{
+    "context": ["https://www.w3.org/2018/credentials/v1"],
+    "type": ["VerifiableCredential"],
+    "issuer": "did:example:issuer123",
+    "credentialSubject": {
+        "id": "did:example:subject123",
+        "name": "John Doe"
+    },
+    "claim": {
+        "degree": "Bachelor of Science"
+    }
+}
+
+_________________
+
+{
+    "id": 7,
+    "context": ["https://www.w3.org/2018/credentials/v1"],
+    "type": ["VerifiableCredential"],
+    "issuer": "did:example:issuer123",
+    "credentialSubject": {
+        "id": "did:example:subject123",
+        "name": "John Doe"
+    },
+    "claim": {
+        "degree": "Bachelor of Science"
+    },
+    "proof": {
+        "jws": "0e69a86ffc7d3bd2b06ce57288450f5ae2ad1b8f73e58751245e748fde1286be",
+        "type": "Ed25519Signature2020",
+        "created": "2025-01-04T21:57:35.005112",
+        "proofPurpose": "assertionMethod",
+        "verificationMethod": "did:example:issuer123#keys-1"
+    },
+    "issued_at": "2025-01-04T21:57:35",
+    "expiration_date": null,
+    "signature": "0e69a86ffc7d3bd2b06ce57288450f5ae2ad1b8f73e58751245e748fde1286be",
+    "revoked": false,
     "revoked_at": null
 }

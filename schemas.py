@@ -3,10 +3,10 @@ from typing import List, Optional, Dict
 from pydantic import BaseModel
 
 class CredentialSubject(BaseModel):
-    id: str  # DID del sujeto
+    id: str
     givenName: Optional[str]
     familyName: Optional[str]
-    degree: Optional[Dict[str, str]]  # Información del título o grado
+    degree: Optional[Dict[str, str]]
 
 class Proof(BaseModel):
     type: str
@@ -15,13 +15,12 @@ class Proof(BaseModel):
     verificationMethod: str
     jws: str
 
-
 class CredentialCreate(BaseModel):
     context: List[str] = ["https://www.w3.org/2018/credentials/v1"]
     type: List[str] = ["VerifiableCredential"]
     issuer: str
     credentialSubject: Dict[str, str]  # Definido como un diccionario
-    claim: Dict[str, str]
+    claim: Optional[Dict[str, str]] = None  # Asegúrate de que este campo exista
     signature: Optional[str] = None
 
 
@@ -29,31 +28,14 @@ class CredentialResponse(BaseModel):
     id: int
     context: List[str]
     type: List[str]
-    subject: Optional[str]  # Derivado de credentialSubject["id"]
+    credentialSubject: Dict[str, str]
     issuer: str
-    claim: Optional[Dict[str, str]]  # claim puede ser null
-    issued_at: datetime
-    expiration_date: Optional[datetime]
+    issuanceDate: datetime
+    expirationDate: Optional[datetime]
+    proof: Proof
     revoked: bool
     revoked_at: Optional[datetime]
-    signature: Optional[str]  # signature puede ser null
+    signature: Optional[str]
 
     class Config:
         orm_mode = True
-
-    @classmethod
-    def from_orm(cls, obj):
-        return cls(
-            id=obj.id,
-            context=obj.context,
-            type=obj.type,
-            subject=obj.credentialSubject.get("id") if obj.credentialSubject else None,
-            issuer=obj.issuer,
-            claim=obj.claim if obj.claim else {},
-            issued_at=obj.issued_at,
-            expiration_date=obj.expiration_date,
-            revoked=obj.revoked,
-            revoked_at=obj.revoked_at,
-            signature=obj.signature,
-        )
-

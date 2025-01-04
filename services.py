@@ -11,10 +11,11 @@ def create_credential(db: Session, credential: CredentialCreate):
         context=credential.context,
         type=credential.type,
         issuer=credential.issuer,
-        credentialSubject=credential.credentialSubject or {},  # Predeterminado a diccionario vacío
-        claim=credential.claim or {},  # Predeterminado a diccionario vacío
-        proof=proof or {},  # Predeterminado a diccionario vacío
-        issued_at=datetime.utcnow(),
+        credentialSubject=credential.credentialSubject or {},
+        claim=credential.claim or {},  # Asigna un diccionario vacío si está ausente
+        proof=proof or {},
+        issuanceDate=datetime.utcnow(),
+        expirationDate=None,
         signature=credential.signature or generate_signature(
             f"{credential.issuer}-{credential.credentialSubject.get('id', 'unknown')}"
         ),
@@ -25,11 +26,10 @@ def create_credential(db: Session, credential: CredentialCreate):
     db.add(db_credential)
     db.commit()
     db.refresh(db_credential)
-    return db_credential  # Devuelve el objeto creado
+    return db_credential
 
 
 def generate_proof(credential: CredentialCreate):
-    print("DEBUG: Credential data:", credential)
     return {
         "type": "Ed25519Signature2020",
         "created": datetime.utcnow().isoformat(),
@@ -59,4 +59,3 @@ def revoke_credential(db: Session, credential_id: int):
         db.commit()
         return credential
     return None
-
