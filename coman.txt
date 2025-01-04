@@ -1,8 +1,0 @@
- - Creacion del archivo venv
-        python -m venv venv 
-    - Activacion 
-        source venv/bin/activate
-    - Instalacion de dependencias
-        pip install fastapi uvicorn sqlalchemy pymysql pydantic
-        pip freeze > requirements.txt
-
