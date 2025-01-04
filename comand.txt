@@ -1,0 +1,2 @@
+python -m venv venv  -> comnado para la creació
+.\venv\Scripts\Activate   -> comando para la activacion
