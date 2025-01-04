@@ -1,28 +1,32 @@
-"""
-Define los esquemas de validación para solicitudes y respuestas.
-"""
-
 from datetime import datetime
-from typing import List, Optional
+from typing import List, Optional, Dict
 from pydantic import BaseModel
+
+class CredentialSubject(BaseModel):
+    id: str  # DID del sujeto
+    givenName: Optional[str]
+    familyName: Optional[str]
+    degree: Optional[Dict[str, str]]  # Información del título o grado
+
+class Proof(BaseModel):
+    type: str
+    created: str
+    proofPurpose: str
+    verificationMethod: str
+    jws: str
 
 class CredentialCreate(BaseModel):
     context: Optional[List[str]] = ["https://www.w3.org/2018/credentials/v1"]
     type: Optional[List[str]] = ["VerifiableCredential"]
-    subject: str
     issuer: str
-    claim: str
-    signature: Optional[str] = None
+    credentialSubject: CredentialSubject
+    issued_at: Optional[str] = datetime.utcnow().isoformat() + "Z"  # Valor predeterminado
+    expiration_date: Optional[str]
 
-class CredentialResponse(BaseModel):
+class CredentialResponse(CredentialCreate):
     id: int
-    subject: str
-    issuer: str
-    claim: str
-    issued_at: datetime
-    signature: str
-    revoked: bool
-    revoked_at: Optional[datetime]
+    proof: Optional[Proof]
 
     class Config:
-        orm_mode = True
+        from_attributes = True
+

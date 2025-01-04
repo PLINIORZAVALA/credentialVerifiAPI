@@ -7,21 +7,30 @@ from utils import generate_signature
 
 
 def create_credential(db: Session, credential: CredentialCreate):
+    proof = generate_proof(credential)
     db_credential = Credential(
-        context=["https://www.w3.org/2018/credentials/v1"],  # Valor por defecto
-        type=["VerifiableCredential"],                      # Valor por defecto
-        subject=credential.subject,
+        context=credential.context,
+        type=credential.type,
         issuer=credential.issuer,
-        claim=credential.claim,
-        signature=credential.signature or generate_signature(f"{credential.subject}-{credential.claim}"),
+        credentialSubject=credential.credentialSubject.dict(),
+        proof=proof,
         issued_at=datetime.utcnow(),
+        expiration_date=credential.expiration_date,
     )
     db.add(db_credential)
     db.commit()
     db.refresh(db_credential)
     return db_credential
 
-
+def generate_proof(credential: CredentialCreate) -> dict:
+    """Genera la sección 'proof' de la credencial."""
+    return {
+        "type": "Ed25519Signature2018",
+        "created": datetime.utcnow().isoformat() + "Z",
+        "proofPurpose": "assertionMethod",
+        "verificationMethod": "did:example:456#keys-1",
+        "jws": generate_signature(f"{credential.issuer}-{credential.credentialSubject.id}"),
+    }
 
 def get_credential(db: Session, credential_id: int):
     return db.query(Credential).filter(Credential.id == credential_id).first()

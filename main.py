@@ -9,6 +9,8 @@ from models import Base, Credential
 from schemas import CredentialCreate, CredentialResponse
 from services import create_credential, get_credential, delete_credential, revoke_credential
 from utils import generate_signature
+from sqlalchemy.sql import cast
+from sqlalchemy.types import String
 
 # Inicializar la aplicación FastAPI
 app = FastAPI()
@@ -31,18 +33,16 @@ def read_root():
     return {"message": "Bienvenido a la API de Credenciales Verificables"}
 
 
-@app.post("/credentials/", response_model=CredentialResponse)
+@app.post("/credentials/", response_model=CredentialResponse, tags=["Credentials"])
 def create_new_credential(credential: CredentialCreate, db: Session = Depends(get_db)):
-    """Crea una nueva credencial verificable."""
+    """Crea una nueva credencial verificable completa."""
     existing_credential = db.query(Credential).filter(
-        Credential.subject == credential.subject,
         Credential.issuer == credential.issuer,
-        Credential.claim == credential.claim,
+        cast(Credential.credentialSubject["id"], String) == credential.credentialSubject.id,
     ).first()
     if existing_credential:
         raise HTTPException(status_code=400, detail="Credential already exists")
 
-    credential.signature = generate_signature(f"{credential.subject}-{credential.claim}")
     return create_credential(db, credential)
 
 
