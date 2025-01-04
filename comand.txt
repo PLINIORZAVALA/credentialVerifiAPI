@@ -37,11 +37,11 @@ Copiar código
 {
     "subject": "John Doe",
     "issuer": "University of Example",
-    "claim": "Bachelor of Science",
+    "claim": "Bachelor of Science"
 }
 Respuesta esperada:
 
-json
+json-
 Copiar código
 {
     "id": 1,
